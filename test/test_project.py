@@ -24,3 +24,4 @@ class ProjectTest(unittest.TestCase):
         self.app.login()
         self.app.main_page.navigate()
         self.app.main_menu.click_create_project()
+        self.app.main_menu.wait_until_created_project()
