@@ -24,4 +24,26 @@ class ProjectTest(unittest.TestCase):
         self.app.login()
         self.app.main_page.navigate()
         self.app.main_menu.click_create_project()
-        self.app.main_menu.wait_until_created_project()
+
+    def test_create_task(self):
+        self.app.login()
+        self.app.main_page.navigate()
+        self.app.main_page.click_create_task()
+
+    def test_create_task_and_date(self):
+        self.app.login()
+        self.app.main_page.navigate()
+        self.app.main_page.create_task_and_date()
+        self.app.main_page.check_new_task()
+
+    def test_create_sub_task(self):
+        self.app.login()
+        self.app.main_page.navigate()
+        self.app.main_page.click_create_task()
+        self.app.main_page.create_sub_task()
+
+    def test_create_comment(self):
+        self.app.login()
+        self.app.main_page.navigate()
+        message = self.app.main_page.create_comment()
+        self.assertEqual("Комментарии и загрузка файлов – функция Премиум", message)
