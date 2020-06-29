@@ -29,7 +29,7 @@ requirements: [selenium; todoist-python; webdriver-manager; webdrivermanager; ro
 
 *IMPORTANT*, please note: 
 
-Some API tests (robot tests) are failing for the following reasons (possibly bugs in the API):
+Some API tests (robot tests \ unittest) are failing for the following reasons (possibly bugs in the API):
 
 * Create project with invalid parent id- (normal severity) Web Application does not accept project name that 
   is longer than 120 characters (Create project with empty name), so I assumed that the API should also reject lengthy names
