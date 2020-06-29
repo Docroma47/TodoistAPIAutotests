@@ -16,7 +16,7 @@ The following test types have been implemented:
 - API tests using Robot Framework ```test\robot_test.robot```
 
 
-# Instructions for start:
+### Installation:
 
 Library Installation:  ```pip install -r requirements.txt``` 
 
