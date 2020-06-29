@@ -12,21 +12,18 @@ class TodoistLibrary:
 
     ### Test Teardown ###
     def test_clean_up(self):
-        self.delete_project("Roma's Project")
+        self.delete_project()
         self.api.commit()
 
-    ### Общие функции ###
     def commit_and_sync(self):
         self.api.commit()
         self.api.sync()
 
-    def delete_project(self, name):
-        def flt(project):
-            return project["name"] == name
-        for project in self.api.projects.all(filt=flt):
+    def delete_project(self):
+        for project in self.api.projects.all():
             self.api.projects.delete(project["id"])
+        self.api.items.all().clear()
 
-    ### Функции создания и добавления проектов и задач ###
     def create_project_with_name(self, name: str = None):
         self.api.projects.add(name)
 
@@ -52,31 +49,14 @@ class TodoistLibrary:
         task_id = self.api.items.add(name_task, project_id=project['id'], due={'date': '2020-07-18T07:00:00Z'})
         self.api.notes.add(task_id['id'], 'Comment3')
 
-    def create_invalid_parent_project_and_child_project(self, name, parent_id: int):
-        self.api.projects.add(name, parent_id)
-
     def create_parent_project_and_child_project(self, parent: str, child: str):
         parent_project = self.api.projects.add(parent)
         self.api.projects.add(child, parent_id=parent_project["id"])
-
-    def create_empty_name_project(self):
-        self.api.projects.add("")
 
     def create_task_with_name_and_priority(self, name_project, task_name, priority: int):
         self.api.projects.add(name_project)
         self.api.items.add(task_name, priority=priority)
 
-    def commit_and_expect_error(self, error_code, error):
-        try:
-            self.api.commit()
-            assert False
-        except Exception as ex:
-            if ex.args[1]['error_code'] != error_code:
-                assert False
-            if ex.args[1]['error'] != error:
-                assert False
-
-    ### Assert для проверки результатов ###
     def assert_project_with_name_exists(self, name_project):
         projects = self.api.projects.all(filt=lambda project: project['name'] == name_project)
         assert len(projects) > 0, "Project could not be found"
@@ -105,14 +85,6 @@ class TodoistLibrary:
         child = child_tasks[0]
         assert child["parent_id"] == parent['id'], "Task is not parent of another project"
 
-    def commit_and_sync_expect_error_invalid_parent(self, error_code = None, error = None):
-        try:
-            self.api.commit()
-            self.api.sync()
-            assert False, "Project should not be created with invalid parent"
-        except Exception as ex:
-            assert False, "Project should not be created with invalid parent"
-
     def assert_project_is_parent_of_another_project(self, parent, child):
         projects = self.api.projects.all(filt=lambda project: project["name"] == parent)
         assert len(projects) > 0, "Parent project could not be found"
@@ -134,24 +106,9 @@ class TodoistLibrary:
             if error_code is not None and ex.args[1]['error_code'] != error_code:
                 assert False, "Wrong error code"
 
-    def assert_commit_create_empty_name_project_expect_error(self):
-        try:
-            self.api.commit()
-            assert False, "Project should not be created with invalid name"
-        except Exception as ex:
-            assert False, "Project should not be created with invalid name"
-
-    def commit_and_sync_create_long_name_project_expect_error(self):
-        try:
-            self.api.commit()
-            self.api.sync()
-            assert False, "Project should not be created with invalid long name"
-        except Exception as ex:
-            assert False, "Project should not be created with invalid long name"
-
     def task_has_priority(self, task_name, priority: int):
         tasks = self.api.items.all(filt=lambda task: task["content"] == task_name)
-        assert len(tasks) > 0, "Parent project could not be found"
+        assert len(tasks) > 0, "Task could not be found"
         task = tasks[0]
         assert task['priority'] == priority, "Task priority is wrong"
 

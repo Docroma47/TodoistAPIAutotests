@@ -21,7 +21,7 @@ Create parent project and child project
 ### Negative cases ###
 Create project with invalid parent id
     When Create Project With Name And Parent Id   Roma's project   345345345345345
-    Then Commit And Sync Expect Error   Invalid parent projecrt
+    Then Commit And Sync Expect Error   Invalid parent project
 # Boundary-value analysis: project name should be not empty and be less than 120 characters
 Create project with empty name
     When Create Project With Name
@@ -57,10 +57,10 @@ Create task with valid priority - upper bound
     And Task Has Priority  Task-1-Priority   4
 ### Negative cases ###
 # Boundary-value analysis and equivalent classes: priority should be between 1 - 4
-Create task with invalid priority - lower bound
+Create task with invalid priority - upper bound
     When Create Task With Name And Priority  Roma's Project   Task-1-Priority   0
     Then Commit And Sync Expect Error  Invalid priority
-Create task with invalid priority - upper bound
+Create task with invalid priority - lower bound
     When Create Task With Name And Priority  Roma's Project   Task-1-Priority   5
     Then Commit And Sync Expect Error  Invalid priority
 
@@ -68,4 +68,4 @@ Create task with invalid priority - upper bound
 ### Negative cases ###
 Create project and add commet
     When Create Project And Add Comment  Roma's Project    Task-For-Subtask
-    Then Assert Commit And Expect Error  32    Premium only feature
+    Then Commit And Sync Expect Error  32    Premium only feature
