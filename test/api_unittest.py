@@ -26,34 +26,29 @@ class Todoist(unittest.TestCase):
         task_3 = self.api.items.add('SUB-Task', project_id=project['id'], due={'date': '2020-07-17T23:00:00Z'})
         task_3.move(parent_id=task_2['id'])
 
-        self.api.commit()
-
     def test_create_project(self):
-        name = str('CREATE API PROJECT')
-        self.api.projects.add(name)
+        self.api.projects.add('CREATE API PROJECT')
 
         found = False
         for project in self.api.projects.all():
-            if project["name"] == name:
+            if project["name"] == 'CREATE API PROJECT':
                 found = True
                 break
         assert found, "Project not found"
 
 
     def test_create_task(self):
-        task = str('Task-1-No-Data')
         project = self.api.projects.add('CREATE API PROJECT')
         self.api.items.add('Task-1-No-Data', project_id=project['id'])
 
         found = False
         for items in self.api.items.all():
-            if items["content"] == task:
+            if items["content"] == 'Task-1-No-Data':
                 found = True
                 break
         assert found, "Task not found"
 
     def test_create_task_with_datetime(self):
-        date = str('2020-07-18T07:00:00Z')
         project = self.api.projects.add('CREATE API PROJECT')
         self.api.items.add('Task-2-Yes-Data-And-Time', project_id=project['id'], due={'date': '2020-07-18T07:00:00Z'})
 
@@ -68,13 +63,13 @@ class Todoist(unittest.TestCase):
         items = self.api.items.all()
         found = False
         for i in range(range_items):
-            if items[i]['due']['date'] == date:
+            if items[i]['due']['date'] == '2020-07-18T07:00:00Z':
                 found = True
                 break
         assert found, "Task with date not found"
 
 
-    def test_create_subtask_(self):
+    def test_create_subtask(self):
         project = self.api.projects.add("CREATE API PROJECT")
         task_1 = self.api.items.add('Task-1-No-Data', project_id=project['id'])
         task_2 = self.api.items.add('SUB-Task', project_id=project['id'], due={'date': '2020-07-17T23:00:00Z'})
@@ -93,3 +88,13 @@ class Todoist(unittest.TestCase):
                 found = True
                 break
         assert found, "Subtask with date not found"
+
+    def test_create_cubtest(self):
+        project = self.api.projects.add("CREATE API PROJECT")
+        task = self.api.items.add('Task-1-No-Data', project_id=project['id'])
+        self.api.notes.add(task['id'], 'Comment3')
+
+        try:
+            self.api.commit()
+        except Exception as ex:
+                print(ex)
