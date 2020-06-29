@@ -10,7 +10,7 @@ The following features have been tested:
 * Positive and negative scenarios
 * Boundary value analysis and equivalence
 
-In project implemented following types of tests:
+The following test types have been implemented:
 - UI Test using selenium  ```test\unittest_project.py```
 - API unittest ```test\api_unittest.py```
 - API tests using Robot Framework ```test\robot_test.robot```
