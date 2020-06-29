@@ -18,6 +18,10 @@ The following test types have been implemented:
 
 ### Installation:
 
+```git clone git@github.com:Docroma47/TodoistAutotests.git
+cd TodoistAutotests
+pip install -r requirements.txt
+```
 Library Installation:  ```pip install -r requirements.txt``` 
 
 requirements: [selenium; todoist-python; webdriver-manager; webdrivermanager; robotframework-seleniumlibrary]
