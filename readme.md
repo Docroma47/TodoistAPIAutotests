@@ -12,10 +12,9 @@ The following features have been tested:
 
 The following test types have been implemented:
 - UI Test using selenium  ```test\unittest_project.py```
-- API unittest ```test\api_unittest.py```
+- API unittest (used for getting to know Todois API) ```test\api_unittest.py```
 - API tests using Robot Framework ```test\robot_test.robot```
 
-All resources by robot in the directory ```\lib\todoist_library.py```
 
 # Instructions for start:
 
