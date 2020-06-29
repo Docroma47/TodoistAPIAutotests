@@ -46,4 +46,4 @@ class ProjectTest(unittest.TestCase):
         self.app.login()
         self.app.main_page.navigate()
         message = self.app.main_page.create_comment()
-        self.assertEqual("Комментарии и загрузка файлов – функция Премиум", message)
+        self.assertEqual(message, "Комментарии и загрузка файлов – функция Премиум")
