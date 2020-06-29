@@ -8,60 +8,64 @@ Test Teardown    Test Clean Up
 ### Project test cases ###
 ### Positive cases ###
 Create Project
-    When Create New Project With Name  Roma's Project
+    When Create Project With Name  Roma's Project
     And Commit And Sync
-    Then Project With Name Exists  Roma's Project
+    Then Assert Project With Name Exists  Roma's Project
 Create parent project and child project
-    When Create Valid Parent Project And Child Project    Roma's Project parent valid     Roma's Project child valid
+    When Create Parent Project And Child Project    Roma's parent project    Roma's child project
     And Commit And Sync
-    Then Commit And Sync Expect Error Invalid Parent   Roma's Project parent valid    Roma's Project child valid
+    Then Assert Project With Name Exists  Roma's parent project
+    And Assert Project With Name Exists  Roma's child project
+    And Assert Project Is Parent Of Another Project  Roma's parent project  Roma's child project
 
 ### Negative cases ###
-Create project with parent id
-    When Create Invalid Parent Project And Child Project   Roma's child Project parent invalid   345345345345345
-    Then Commit And Sync Expect Error   10   InvalidParent
+Create project with invalid parent id
+    When Create Project With Name And Parent Id   Roma's project   345345345345345
+    Then Commit And Sync Expect Error   Invalid parent projecrt
 # Boundary-value analysis: project name should be not empty and be less than 120 characters
 Create project with empty name
-    When Create New Project With Name
-    Then Commit And Sync And Expect Error  -1  Empty project name
+    When Create Project With Name
+    Then Commit And Sync Expect Error  Empty project name
 Create project with long name
-    When Create New Project With Name  "sdsadasdasdasdasdasdddddddddddddddddddddddddddddddddddddddddddddddddddasddddddddddddasdasdasdasdsdadsasdassdasdasasddddsd"
-    Then Commit And Sync Create Long Name Project Expect Error
+    When Create Project With Name  sdsadasdasdasdasdasdddddddddddddddddddddddddddddddddddddddddddddddddddasddddddddddddasdasdasdasdsdadsasdassdasdasasddddsd
+    Then Commit And Sync Expect Error   Project is too long
 
 ### Tasks test cases ###
 ### Positive cases ###
 Create task
-    When Create New Task With Name  Roma's Project    Task-1-No-Data
-    And Commit
+    When Create Task With Name  Roma's Project    Task-1-No-Data
+    And Commit And Sync
     Then Assert Task Exists  Task-1-No-Data
 Create task with date and time
-    When Create New Task With Datetime With Name  Roma's Project    Task-1-Yes-Datetime
-    And Commit
-    Then Assert Task With Datetime Exists  Task-1-Yes-Datetime    2020-07-18T07:00:00Z
+    When Create Task With Name And Due Date  Roma's Project    Task-1-Yes-Datetime   2020-07-18T07:00:00Z
+    And Commit And Sync
+    Then Assert Task Has Due Date  Task-1-Yes-Datetime    2020-07-18T07:00:00Z
 Create subtask
-    When Create New Task And Subtask With Name  Roma's Project    Task-For-Subtask    Subtask
-    And Commit
+    When Create Task And Subtask With Name  Roma's Project    Task-For-Subtask    Subtask
+    And Commit And Sync
     Then Assert Task With Subtask Exists  Task-For-Subtask    Subtask
 # Boundary-value analysis and equivalent classes: priority should be between 1 - 4
 Create task with valid priority - lower bound
-    When Create New Task With Name And Priority  Roma's Project   1
-    And Commit
-    Then Assert Task Exists  Task-1-No-Data
+    When Create Task With Name And Priority  Roma's Project   Task-1-Priority   1
+    And Commit And Sync
+    Then Assert Task Exists  Task-1-Priority
+    And Task Has Priority  Task-1-Priority   1
 Create task with valid priority - upper bound
-    When Create New Task With Name And Priority  Roma's Project   4
-    And Commit
-    Then Assert Task Exists  Task-1-No-Data
+    When Create Task With Name And Priority  Roma's Project   Task-1-Priority   4
+    And Commit And Sync
+    Then Assert Task Exists  Task-1-Priority
+    And Task Has Priority  Task-1-Priority   4
 ### Negative cases ###
 # Boundary-value analysis and equivalent classes: priority should be between 1 - 4
 Create task with invalid priority - lower bound
-    When Create New Task With Name And Priority  Roma's Project   0
-    Then Commit And Expect Error  20   Invalid priority
+    When Create Task With Name And Priority  Roma's Project   Task-1-Priority   0
+    Then Commit And Sync Expect Error  Invalid priority
 Create task with invalid priority - upper bound
-    When Create New Task With Name And Priority  Roma's Project   5
-    Then Commit And Expect Error  20   Invalid priority
+    When Create Task With Name And Priority  Roma's Project   Task-1-Priority   5
+    Then Commit And Sync Expect Error  Invalid priority
 
 ### Comments test cases ###
 ### Negative cases ###
 Create project and add commet
-    When Create New Project And Add Comment  Roma's Project    Task-For-Subtask
+    When Create Project And Add Comment  Roma's Project    Task-For-Subtask
     Then Assert Commit And Expect Error  32    Premium only feature

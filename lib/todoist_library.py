@@ -1,4 +1,6 @@
 from todoist import TodoistAPI
+from todoist.api import SyncError
+
 
 class TodoistLibrary:
     api: TodoistAPI
@@ -25,24 +27,27 @@ class TodoistLibrary:
             self.api.projects.delete(project["id"])
 
     ### Функции создания и добавления проектов и задач ###
-    def create_new_project_with_name(self, name: str):
+    def create_project_with_name(self, name: str = None):
         self.api.projects.add(name)
 
-    def create_new_task_with_name(self, name_project: str, name_task: str):
+    def create_project_with_name_and_parent_id(self, name: str, parent_id: int = None):
+        self.api.projects.add(name=name, parent_id=parent_id)
+
+    def create_task_with_name(self, name_project: str, name_task: str):
         project = self.api.projects.add(name_project)
         self.api.items.add(name_task, project_id=project['id'])
 
-    def create_new_task_with_datetime_with_name(self, name_project: str, name_task: str):
+    def create_task_with_name_and_due_date(self, name_project: str, name_task: str, due_date: str):
         project = self.api.projects.add(name_project)
-        self.api.items.add(name_task, project_id=project['id'], due={'date': '2020-07-18T07:00:00Z'})
+        self.api.items.add(name_task, project_id=project['id'], due={'date': due_date})
 
-    def create_new_task_and_subtask_with_name(self, name_project: str, name_task: str, name_subtask: str):
+    def create_task_and_subtask_with_name(self, name_project: str, name_task: str, name_subtask: str):
         project = self.api.projects.add(name_project)
         task_id = self.api.items.add(name_task, project_id=project['id'], due={'date': '2020-07-18T07:00:00Z'})
         subtask = self.api.items.add(name_subtask, project_id=project['id'], due={'date': '2020-07-18T05:00:00Z'})
         subtask.move(parent_id=task_id['id'])
 
-    def create_new_project_and_add_comment(self, name_project, name_task):
+    def create_project_and_add_comment(self, name_project, name_task):
         project = self.api.projects.add(name_project)
         task_id = self.api.items.add(name_task, project_id=project['id'], due={'date': '2020-07-18T07:00:00Z'})
         self.api.notes.add(task_id['id'], 'Comment3')
@@ -50,16 +55,16 @@ class TodoistLibrary:
     def create_invalid_parent_project_and_child_project(self, name, parent_id: int):
         self.api.projects.add(name, parent_id)
 
-    def create_valid_parent_project_and_child_project(self, parent: str, child: str):
+    def create_parent_project_and_child_project(self, parent: str, child: str):
         parent_project = self.api.projects.add(parent)
         self.api.projects.add(child, parent_id=parent_project["id"])
 
     def create_empty_name_project(self):
         self.api.projects.add("")
 
-    def create_new_task_with_name_and_priority(self, name, priority: int):
-        self.api.projects.add(name)
-        self.api.items.add(name, priority=priority)
+    def create_task_with_name_and_priority(self, name_project, task_name, priority: int):
+        self.api.projects.add(name_project)
+        self.api.items.add(task_name, priority=priority)
 
     def commit_and_expect_error(self, error_code, error):
         try:
@@ -72,53 +77,33 @@ class TodoistLibrary:
                 assert False
 
     ### Assert для проверки результатов ###
-    def project_with_name_exists(self, name):
-        found = False
-        for project in self.api.projects.all():
-            if project["name"] == name:
-                found = True
-                break
-        assert found, "Project not found"
+    def assert_project_with_name_exists(self, name_project):
+        projects = self.api.projects.all(filt=lambda project: project['name'] == name_project)
+        assert len(projects) > 0, "Project could not be found"
+        project = projects[0]
+        assert project['name'] == name_project, "Project is not created"
 
-    def assert_task_exists(self, name):
-        found = False
-        for items in self.api.items.all():
-            if items["content"] == name:
-                found = True
-                break
-        assert found, "Task not found"
+    def assert_task_exists(self, name_task):
+        name_tasks = self.api.items.all(filt=lambda task: task['content'] == name_task)
+        assert len(name_tasks) > 0, "Parent task could not be found"
+        task = name_tasks[0]
+        assert task['content'] == name_task, "Task is not created"
 
-    def assert_task_with_datetime_exists(self, task_name, task_date):
-        found = False
-        for items in self.api.items.all():
-            if items["content"] == task_name:
-                found = True
-                break
-        assert found, "Task not found"
 
-        range_items = len(self.api.items.all())
-        items = self.api.items.all()
-        found = False
-        for i in range(range_items):
-            if items[i]['due']['date'] == task_date:
-                found = True
-                break
-        assert found, "Task with date not found"
+    def assert_task_has_due_date(self, task_name, due_date):
+        tasks = self.api.items.all(filt=lambda task: task["content"] == task_name)
+        assert len(tasks) > 0, "Parent task could not be found"
+        task = tasks[0]
+        assert task['due']['date'] == due_date, "Task due date is wrong"
 
-    def assert_task_with_subtask_exists(self, name, subtask):
-        found = False
-        for items in self.api.items.all():
-            if items["content"] == name:
-                found = True
-                break
-        assert found, "Task not found"
-
-        found = False
-        for items in self.api.items.all():
-            if items["content"] == subtask:
-                found = True
-                break
-        assert found, "Subtask with date not found"
+    def assert_task_with_subtask_exists(self, parent_task, child_task):
+        parent_tasks = self.api.items.all(filt=lambda task: task["content"] == parent_task)
+        assert len(parent_tasks) > 0, "Parent task could not be found"
+        parent = parent_tasks[0]
+        child_tasks = self.api.items.all(filt=lambda project: project["content"] == child_task)
+        assert len( child_tasks) > 0, "Child task could not be found"
+        child = child_tasks[0]
+        assert child["parent_id"] == parent['id'], "Task is not parent of another project"
 
     def commit_and_sync_expect_error_invalid_parent(self, error_code = None, error = None):
         try:
@@ -128,31 +113,26 @@ class TodoistLibrary:
         except Exception as ex:
             assert False, "Project should not be created with invalid parent"
 
-    def child_project_with_parent_project_exists(self, parent, child):
-        found = False
-        for project in self.api.projects.all():
-            if project["name"] == parent:
-                found = True
-                break
-        assert found, "Project parent is not created"
+    def assert_project_is_parent_of_another_project(self, parent, child):
+        projects = self.api.projects.all(filt=lambda project: project["name"] == parent)
+        assert len(projects) > 0, "Parent project could not be found"
+        parent_project = projects[0]
+        projects = self.api.projects.all(filt=lambda project: project["name"] == child)
+        assert len(projects) > 0, "Child project could not be found"
+        child_project = projects[0]
+        assert child_project["parent_id"] == parent_project['id'], "Project is not parent of another project"
 
-        found = False
-        for project in self.api.projects.all():
-            if project["name"] == child:
-                found = True
-                break
-        assert found, "Project child is not created"
-
-    def commit_and_sync_expect_error(self, error_code: int, error: str):
+    def commit_and_sync_expect_error(self, error: str, error_code: int = None):
         try:
             self.api.commit()
             self.api.sync()
-            assert False
-        except Exception as ex:
-            if ex.args[1]['error_code'] != error_code:
-                assert False
-            if ex.args[1]['error'] != error:
-                assert False
+            assert False, "Server did not throw any error"
+        except AssertionError as ae:
+            raise ae
+        except SyncError as ex:
+            assert ex.args[1]['error'] == error, "Wrong error message"
+            if error_code is not None and ex.args[1]['error_code'] != error_code:
+                assert False, "Wrong error code"
 
     def assert_commit_create_empty_name_project_expect_error(self):
         try:
@@ -168,4 +148,10 @@ class TodoistLibrary:
             assert False, "Project should not be created with invalid long name"
         except Exception as ex:
             assert False, "Project should not be created with invalid long name"
+
+    def task_has_priority(self, task_name, priority: int):
+        tasks = self.api.items.all(filt=lambda task: task["content"] == task_name)
+        assert len(tasks) > 0, "Parent project could not be found"
+        task = tasks[0]
+        assert task['priority'] == priority, "Task priority is wrong"
 

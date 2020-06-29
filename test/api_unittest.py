@@ -2,8 +2,7 @@ import unittest
 
 from todoist import TodoistAPI
 
-### Данные юнит-тесты использовались в изучении API Todoist и в дальнейшем я решил оставить их ###
-class Todoist(unittest.TestCase):
+class Todoist_API_Test(unittest.TestCase):
     api: TodoistAPI
 
     @classmethod
@@ -20,7 +19,6 @@ class Todoist(unittest.TestCase):
         cls.api.items.all().clear()
         cls.api.commit()
 
-    ### Простейший тест без проверки с созданием почти все нужной функциональности для задания ###
     def test_todoist_api_client_is_connected(self):
         project = self.api.projects.add("CREATE API PROJECT")
         self.api.items.add('Task-1-No-Data', project_id=project['id'])
@@ -28,7 +26,6 @@ class Todoist(unittest.TestCase):
         task_3 = self.api.items.add('SUB-Task', project_id=project['id'], due={'date': '2020-07-17T23:00:00Z'})
         task_3.move(parent_id=task_2['id'])
 
-    ### Юнит-тест создающий проект (с проверкой)###
     def test_create_project(self):
         self.api.projects.add('CREATE API PROJECT')
 
@@ -39,7 +36,6 @@ class Todoist(unittest.TestCase):
                 break
         assert found, "Project not found"
 
-    ### Юнит-тест создающий таск (с проверкой)###
     def test_create_task(self):
         project = self.api.projects.add('CREATE API PROJECT')
         self.api.items.add('Task-1-No-Data', project_id=project['id'])
@@ -51,7 +47,6 @@ class Todoist(unittest.TestCase):
                 break
         assert found, "Task not found"
 
-    ### Юнит-тест создающий таск с датой и временем (с проверкой)###
     def test_create_task_with_datetime(self):
         project = self.api.projects.add('CREATE API PROJECT')
         self.api.items.add('Task-2-Yes-Data-And-Time', project_id=project['id'], due={'date': '2020-07-18T07:00:00Z'})
@@ -72,28 +67,20 @@ class Todoist(unittest.TestCase):
                 break
         assert found, "Task with date not found"
 
-    ### Юнит-тест создающий подзадачу в таске (с проверкой)###
     def test_create_subtask(self):
         project = self.api.projects.add("CREATE API PROJECT")
         task_1 = self.api.items.add('Task-1-No-Data', project_id=project['id'])
         task_2 = self.api.items.add('SUB-Task', project_id=project['id'], due={'date': '2020-07-17T23:00:00Z'})
         task_2.move(parent_id=task_1['id'])
+        print(task_1)
+        print(task_2)
 
-        found = False
-        for items in self.api.items.all():
-            if items["content"] == 'Task-1-No-Data':
-                found = True
-                break
-        assert found, "Task not found"
+        parent_task = self.api.items.all(filt=lambda item: item["content"] == 'Task-1-No-Data')[0]
+        assert parent_task is not None, "Parent task could not be found"
+        print(parent_task['id'])
+        child_task = self.api.items.all(filt=lambda item: item["content"] == 'SUB-Task')[0]
+        assert child_task["parent_id"] == parent_task['id'], "Child task could not be found"
 
-        found = False
-        for items in self.api.items.all():
-            if items["content"] == 'SUB-Task':
-                found = True
-                break
-        assert found, "Subtask with date not found"
-
-    ### Юнит-тест создающий коммент в проекте, тест должен падать###
     def test_create_project_task_comment_non_premium(self):
         project = self.api.projects.add("CREATE API PROJECT")
         task = self.api.items.add('Task-1-No-Data', project_id=project['id'])
@@ -106,7 +93,6 @@ class Todoist(unittest.TestCase):
             self.assertEqual(ex.args[1]['error_code'], 32)
             self.assertEqual(ex.args[1]['error'], "Premium only feature")
 
-    ### Юнит-тест создающий проект и привязывающий его к родительскому ###
     def test_project_parent_id_positive(self):
         parent_project = self.api.projects.add("Roma's Project parent valid")
         self.api.projects.add("Roma's Project child valid", parent_id=parent_project["id"])
@@ -125,7 +111,6 @@ class Todoist(unittest.TestCase):
                 break
         assert found, "Project child is not created"
 
-    ### Юнит-тест создающий проект и привязывающий его к родительскому, тест должен падать ###
     def test_project_parent_id_negative(self):
         try:
             self.api.projects.add(name="Roma's child Project parent invalid", parent_id=345345345345345)
@@ -134,7 +119,6 @@ class Todoist(unittest.TestCase):
         except Exception as ex:
             assert False, "Project should not be created with invalid parent"
 
-    ### Юнит-тест создающий проект с пустым именем, тест должен падать ###
     def test_equivalence_create_project(self):
         try:
             self.api.projects.add("")
