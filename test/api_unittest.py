@@ -1,6 +1,8 @@
 import unittest
 
 from todoist import TodoistAPI
+from todoist.api import SyncError
+
 
 class Todoist_API_Test(unittest.TestCase):
     api: TodoistAPI
@@ -68,18 +70,20 @@ class Todoist_API_Test(unittest.TestCase):
         assert found, "Task with date not found"
 
     def test_create_subtask(self):
-        project = self.api.projects.add("CREATE API PROJECT")
-        task_1 = self.api.items.add('Task-1-No-Data', project_id=project['id'])
-        task_2 = self.api.items.add('SUB-Task', project_id=project['id'], due={'date': '2020-07-17T23:00:00Z'})
-        task_2.move(parent_id=task_1['id'])
-        print(task_1)
-        print(task_2)
+        project = self.api.projects.add("New Project-Test")
+        task_id = self.api.items.add("Task Name New", project_id=project['id'], due={'date': '2020-07-18T07:00:00Z'})
+        subtask = self.api.items.add("SUB Task New", project_id=project['id'], due={'date': '2020-07-18T05:00:00Z'})
+        subtask.move(parent_id=task_id['id'])
+        self.api.sync()
+        self.api.commit()
 
-        parent_task = self.api.items.all(filt=lambda item: item["content"] == 'Task-1-No-Data')[0]
-        assert parent_task is not None, "Parent task could not be found"
-        print(parent_task['id'])
-        child_task = self.api.items.all(filt=lambda item: item["content"] == 'SUB-Task')[0]
-        assert child_task["parent_id"] == parent_task['id'], "Child task could not be found"
+        parent_tasks = self.api.items.all(filt=lambda task: task["content"] == task_id["content"])
+        assert len(parent_tasks) > 0, "Parent task could not be found"
+        parent = parent_tasks[0]
+        child_tasks = self.api.items.all(filt=lambda project: project["content"] == subtask["content"])
+        assert len(child_tasks) > 0, "Child task could not be found"
+        child = child_tasks[0]
+        assert child["parent_id"] == parent['id'], "Task is not parent of another project"
 
     def test_create_project_task_comment_non_premium(self):
         project = self.api.projects.add("CREATE API PROJECT")
@@ -113,16 +117,12 @@ class Todoist_API_Test(unittest.TestCase):
 
     def test_project_parent_id_negative(self):
         try:
-            self.api.projects.add(name="Roma's child Project parent invalid", parent_id=345345345345345)
             self.api.commit()
-            assert False, "Project should not be created with invalid parent"
-        except Exception as ex:
-            assert False, "Project should not be created with invalid parent"
-
-    def test_equivalence_create_project(self):
-        try:
-            self.api.projects.add("")
-            self.api.commit()
-            assert False, "Project should not be created with invalid name"
-        except Exception as ex:
-            assert False, "Project should not be created with invalid name"
+            self.api.sync()
+            assert False, "Server did not throw any error"
+        except AssertionError as ae:
+            raise ae
+        except SyncError as ex:
+            assert ex.args[1]['error'] == "Invalid parent project", "Wrong error message"
+            if None is not None and ex.args[1]['error_code'] != None:
+                assert False, "Wrong error code"

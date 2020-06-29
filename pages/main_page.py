@@ -12,7 +12,7 @@ class MainPage(UIElement):
                             "//div[@class='public-DraftStyleDefault-block public-DraftStyleDefault-ltr']"
     SUBMIT_BUTTON_TASK_XPATH = "//form//button[@type='submit']"
     CANCEL_BUTTON_XPATH = "//form//button[@class='cancel']"
-    LIST_CREATE_TASK_XPATH = "//div[@id='editor']//ul[@class='items']//span[text()='CREATE-TASK-1']"
+    LIST_CREATE_TASK_XPATH = "//div[@id='editor']//ul[@class='items']//div[text()='CREATE-TASK-1']"
 
     TASK_DATE_FIELD_XPATH = "//div[@id='editor']//ul[@class='items']//div[@class='item_editor_assign']/button"
     DATE = "//div[@class='scheduler_popper popper']//div[@class='scheduler-preview-date']"
@@ -20,13 +20,13 @@ class MainPage(UIElement):
     DATE_MENU_INPUT_XPATH = "//div[@class='scheduler_popper popper']//input"
 
     INBOX_ID = "filter_inbox"
-    CREATED_TASK_WITH_DATE_XPATH = "//div[@id='editor']//ul[@class='items']//span[text()='CREATE-TASK-2']"
+    CREATED_TASK_WITH_DATE_XPATH = "//div[@id='editor']//ul[@class='items']//div[text()='CREATE-TASK-2']"
 
 
     CREATED_SUB_TASK = "//section//button[@class='plus_add_button']"
     SUB_TASK_FIELD_XPATH = "//section//div[contains (@class, 'editorContainer')]"
     SUB_TASK_SUBMIT_BUTTON_XPATH = "//section//button[@type='submit']"
-    LIST_CREATE_SUB_TASK_XPATH = "//section//ul[@class='items']//span[text()='SUB-TASK']"
+    LIST_CREATE_SUB_TASK_XPATH = "//section//ul[@class='items']//div[text()='SUB-TASK']"
     CLOSE_BUTTON_XPATH = "//section//button[@class='item_detail_close']"
 
     PANEL_COMMENTS_TASK_XPATH = "//section//button[contains (@aria-controls, 'panel-comments')]"
