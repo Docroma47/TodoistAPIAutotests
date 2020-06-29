@@ -21,10 +21,12 @@ The following test types have been implemented:
 git clone git@github.com:Docroma47/TodoistAutotests.git
 cd TodoistAutotests
 pip install -r requirements.txt
-```
-Library Installation:  ```pip install -r requirements.txt``` 
+``` 
 
 requirements: [selenium; todoist-python; webdriver-manager; webdrivermanager; robotframework-seleniumlibrary]
 
+### Running Test
 
-
+#### Api unittest: ``` sh run_api_unittests.sh ```
+#### UI/Selenium tests: ``` sh run/run_selenium_tests.sh ```
+#### API Robot tests: ``` sh run/run_api_robot_tests.sh ```
