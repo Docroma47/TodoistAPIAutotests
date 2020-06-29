@@ -14,8 +14,9 @@ class TodoistLibrary:
         self.api.commit()
 
     ### Общие функции ###
-    def commit(self):
+    def commit_and_sync(self):
         self.api.commit()
+        self.api.sync()
 
     def delete_project(self, name):
         def flt(project):
@@ -46,20 +47,15 @@ class TodoistLibrary:
         task_id = self.api.items.add(name_task, project_id=project['id'], due={'date': '2020-07-18T07:00:00Z'})
         self.api.notes.add(task_id['id'], 'Comment3')
 
-    def create_project_parent_id_negative(self):
-        self.api.projects.add(name="Roma's child Project parent invalid", parent_id=345345345345345)
+    def create_invalid_parent_project_and_child_project(self, name, parent_id: int):
+        self.api.projects.add(name, parent_id)
 
-    def create_project_parent_id_positive(self):
-        parent_project = self.api.projects.add("Roma's Project parent valid")
-        self.api.projects.add("Roma's Project child valid", parent_id=parent_project["id"])
+    def create_valid_parent_project_and_child_project(self, parent: str, child: str):
+        parent_project = self.api.projects.add(parent)
+        self.api.projects.add(child, parent_id=parent_project["id"])
 
     def create_empty_name_project(self):
         self.api.projects.add("")
-
-    def create_project_with_long_name(self):
-        name = "sdsadasdasdasdasdasdddddddddddddddddddddddddddddddddddddddddddddddddddasddddddddddddasdasda" \
-               "sdasdsdadsasdassdasdasasddddsd"
-        self.api.projects.add(name)
 
     def create_new_task_with_name_and_priority(self, name, priority: int):
         self.api.projects.add(name)
@@ -76,7 +72,7 @@ class TodoistLibrary:
                 assert False
 
     ### Assert для проверки результатов ###
-    def assert_project_exists(self, name):
+    def project_with_name_exists(self, name):
         found = False
         for project in self.api.projects.all():
             if project["name"] == name:
@@ -124,31 +120,33 @@ class TodoistLibrary:
                 break
         assert found, "Subtask with date not found"
 
-    def assert_commit_parent_id_and_expect_error(self):
+    def commit_and_sync_expect_error_invalid_parent(self, error_code = None, error = None):
         try:
             self.api.commit()
+            self.api.sync()
             assert False, "Project should not be created with invalid parent"
         except Exception as ex:
             assert False, "Project should not be created with invalid parent"
 
-    def assert_project_with_parent_id_exists(self):
+    def child_project_with_parent_project_exists(self, parent, child):
         found = False
         for project in self.api.projects.all():
-            if project["name"] == "Roma's Project parent valid":
+            if project["name"] == parent:
                 found = True
                 break
         assert found, "Project parent is not created"
 
         found = False
         for project in self.api.projects.all():
-            if project["name"] == "Roma's Project child valid":
+            if project["name"] == child:
                 found = True
                 break
         assert found, "Project child is not created"
 
-    def assert_commit_and_expect_error(self, error_code: int, error: str):
+    def commit_and_sync_expect_error(self, error_code: int, error: str):
         try:
             self.api.commit()
+            self.api.sync()
             assert False
         except Exception as ex:
             if ex.args[1]['error_code'] != error_code:
@@ -163,9 +161,10 @@ class TodoistLibrary:
         except Exception as ex:
             assert False, "Project should not be created with invalid name"
 
-    def assert_commit_create_long_name_project_expect_error(self):
+    def commit_and_sync_create_long_name_project_expect_error(self):
         try:
             self.api.commit()
+            self.api.sync()
             assert False, "Project should not be created with invalid long name"
         except Exception as ex:
             assert False, "Project should not be created with invalid long name"
