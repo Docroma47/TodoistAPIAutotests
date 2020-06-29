@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from pages.application import Application
 
+### Здесь реализованы UI тесты с использованием selenium ###
 class ProjectTest(unittest.TestCase):
     driver: WebDriver
     app: Application
