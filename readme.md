@@ -20,5 +20,8 @@ All resources by robot in the directory ```\lib\todoist_library.py```
 # Instructions for start:
 
 Library Installation:  ```pip install -r requirements.txt``` 
+
 requirements: [selenium; todoist-python; webdriver-manager; webdrivermanager; robotframework-seleniumlibrary]
+
+
 
