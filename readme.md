@@ -31,13 +31,14 @@ requirements: [selenium; todoist-python; webdriver-manager; webdrivermanager; ro
 
 Some API tests (robot tests) are failing for the following reasons (possibly bugs in the API):
 
-* <Create project with invalid parent id> - (normal severity) Web Application does not accept project name that 
+* Create project with invalid parent id - (normal severity) Web Application does not accept project name that 
   is longer than 120 characters (Create project with empty name), so I assumed that the API should also reject lengthy names
 
-* <Create task with valid priority - lower bound> - (normal severity) The API documentation 
+* Create task with valid priority - lower bound> - (normal severity) The API documentation 
 [states](https://developer.todoist.com/sync/v8/#add-an-item) that task priority should be between 1 and 4,
 so I assumed that the API should also reject priority values that are outside of the valid range
-* <Create project with invalid parent id> - (critical severity) The API allows to create a subtask with parent ID which does not exist
+
+* Create project with invalid parent id - (critical severity) The API allows to create a subtask with parent ID which does not exist
 
 #### API unittest: 
 ``` sh run/run_api_unittests.sh ```
