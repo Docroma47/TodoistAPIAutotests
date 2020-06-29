@@ -17,8 +17,8 @@ The following test types have been implemented:
 
 
 ### Installation:
-
-```git clone git@github.com:Docroma47/TodoistAutotests.git
+```
+git clone git@github.com:Docroma47/TodoistAutotests.git
 cd TodoistAutotests
 pip install -r requirements.txt
 ```
