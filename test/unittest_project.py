@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from pages.application import Application
 
+### Здесь реализованы UI тесты с использованием selenium ###
 class ProjectTest(unittest.TestCase):
     driver: WebDriver
     app: Application
@@ -46,4 +47,4 @@ class ProjectTest(unittest.TestCase):
         self.app.login()
         self.app.main_page.navigate()
         message = self.app.main_page.create_comment()
-        self.assertEqual("Комментарии и загрузка файлов – функция Премиум", message)
+        self.assertEqual(message, "Комментарии и загрузка файлов – функция Премиум")
