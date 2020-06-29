@@ -27,6 +27,9 @@ requirements: [selenium; todoist-python; webdriver-manager; webdrivermanager; ro
 
 ### Running Test
 
-#### Api unittest: ``` sh run_api_unittests.sh ```
-#### UI/Selenium tests: ``` sh run/run_selenium_tests.sh ```
-#### API Robot tests: ``` sh run/run_api_robot_tests.sh ```
+#### Api unittest: 
+``` sh run/run_api_unittests.sh ```
+#### UI/Selenium tests: 
+``` sh run/run_selenium_tests.sh ```
+#### API Robot tests: 
+``` sh run/run.sh ```
