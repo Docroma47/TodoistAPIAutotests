@@ -1,0 +1,1 @@
+robot --pythonpath lib test/selenium_test.robot

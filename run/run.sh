@@ -1,1 +1,1 @@
-robot --pythonpath lib test/*.robot
+robot --pythonpath lib test/robot_tests.robot

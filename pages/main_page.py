@@ -12,7 +12,6 @@ class MainPage(UIElement):
                             "//div[@class='public-DraftStyleDefault-block public-DraftStyleDefault-ltr']"
     SUBMIT_BUTTON_TASK_XPATH = "//form//button[@type='submit']"
     CANCEL_BUTTON_XPATH = "//form//button[@class='cancel']"
-    LIST_CREATE_TASK_XPATH = "//div[@id='editor']//ul[@class='items']//div[text()='CREATE-TASK-1']"
 
     TASK_DATE_FIELD_XPATH = "//div[@id='editor']//ul[@class='items']//div[@class='item_editor_assign']/button"
     DATE = "//div[@class='scheduler_popper popper']//div[@class='scheduler-preview-date']"
@@ -44,43 +43,62 @@ class MainPage(UIElement):
         wait.until(ec.invisibility_of_element((By.ID, self.LOADING_ID)))
         wait.until(ec.url_contains(self.URL))
 
-    def click_create_task(self):
+    def click_create_task(self, name_task: str = "CREATE-TASK-1"):
+        LIST_CREATE_TASK_XPATH = "//div[@id='editor']//div[@class='task_list_item__content']"
+
         wait = WebDriverWait(self.driver, 10)
         wait.until(ec.element_to_be_clickable((By.XPATH, self.ADD_TASK_BUTTON_XPATH))).click()
-        wait.until(ec.visibility_of_element_located((By.XPATH, self.TASK_NAME_FIELD_XPATH))).send_keys("CREATE-TASK-1")
+        wait.until(ec.visibility_of_element_located((By.XPATH, self.TASK_NAME_FIELD_XPATH))).send_keys(name_task)
         wait.until(ec.element_to_be_clickable((By.XPATH, self.SUBMIT_BUTTON_TASK_XPATH))).click()
         wait.until(ec.element_to_be_clickable((By.XPATH, self.CANCEL_BUTTON_XPATH))).click()
-        wait.until(ec.visibility_of_element_located((By.XPATH, self.LIST_CREATE_TASK_XPATH)))
-        wait.until(ec.text_to_be_present_in_element((By.XPATH, self.LIST_CREATE_TASK_XPATH), "CREATE-TASK-1"))
+        wait.until(ec.visibility_of_element_located((By.XPATH, LIST_CREATE_TASK_XPATH)))
+        wait.until(ec.text_to_be_present_in_element((By.XPATH, LIST_CREATE_TASK_XPATH), name_task))
 
-    def create_task_and_date(self):
+    def get_created_task(self):
+        LIST_CREATE_TASK_XPATH = "//div[@id='editor']//div[@class='task_list_item__content']/div"
+
+        wait = WebDriverWait(self.driver, 10)
+        return wait.until(ec.visibility_of_element_located((By.XPATH, LIST_CREATE_TASK_XPATH))).text
+
+    def create_task_and_date(self, name_task: str = "CREATE-TASK-2", date_task: str = "12 june 2021 12:55"):
+
         wait = WebDriverWait(self.driver, 10)
         wait.until(ec.element_to_be_clickable((By.XPATH, self.ADD_TASK_BUTTON_XPATH))).click()
-        wait.until(ec.visibility_of_element_located((By.XPATH, self.TASK_NAME_FIELD_XPATH))).send_keys("CREATE-TASK-2")
+        wait.until(ec.visibility_of_element_located((By.XPATH, self.TASK_NAME_FIELD_XPATH))).send_keys(name_task)
         wait.until(ec.element_to_be_clickable((By.XPATH, self.TASK_DATE_FIELD_XPATH))).click()
         wait.until(ec.visibility_of_element_located((By.XPATH, self.DATE_MENU_XPATH)))
-        wait.until(ec.visibility_of_element_located((By.XPATH, self.DATE_MENU_INPUT_XPATH))).send_keys("12 june 2021 12:55")
+        wait.until(ec.visibility_of_element_located((By.XPATH, self.DATE_MENU_INPUT_XPATH))).send_keys(date_task)
         wait.until(ec.visibility_of_element_located((By.XPATH, self.DATE))).click()
         wait.until(ec.element_to_be_clickable((By.XPATH, self.SUBMIT_BUTTON_TASK_XPATH))).click()
+
+    def get_date_task(self):
+        DATE_TASK_XPATH = "//div[@id='editor']//div[@class='task_list_item__content']/div//span"
+
+        wait = WebDriverWait(self.driver, 10)
+        return wait.until(ec.visibility_of_element_located((By.XPATH, DATE_TASK_XPATH))).text
 
     def check_new_task(self):
         wait = WebDriverWait(self.driver, 10)
         wait.until(ec.element_to_be_clickable((By.ID, self.INBOX_ID))).click()
         wait.until(ec.element_to_be_clickable((By.XPATH, self.CREATED_TASK_WITH_DATE_XPATH)))
 
-    def create_sub_task(self):
+    def create_sub_task(self, name_task: str = "CREATE-TASK-1"):
+        LIST_CREATE_TASK_XPATH = "//div[@id='editor']//ul[@class='items']//div[text()='" + name_task + "']"
+
         wait = WebDriverWait(self.driver, 10)
-        wait.until(ec.element_to_be_clickable((By.XPATH, self.LIST_CREATE_TASK_XPATH))).click()
+        wait.until(ec.element_to_be_clickable((By.XPATH, LIST_CREATE_TASK_XPATH))).click()
         wait.until(ec.element_to_be_clickable((By.XPATH, self.CREATED_SUB_TASK))).click()
         wait.until(ec.element_to_be_clickable((By.XPATH, self.TASK_NAME_FIELD_XPATH))).send_keys("SUB-TASK")
         wait.until(ec.element_to_be_clickable((By.XPATH, self.SUB_TASK_SUBMIT_BUTTON_XPATH))).click()
         wait.until(ec.visibility_of_element_located((By.XPATH, self.LIST_CREATE_SUB_TASK_XPATH)))
         wait.until(ec.visibility_of_element_located((By.XPATH, self.CLOSE_BUTTON_XPATH))).click()
 
-    def create_comment(self):
+    def create_comment(self, name_task: str = "CREATE-TASK-1"):
+        LIST_CREATE_TASK_XPATH = "//div[@id='editor']//ul[@class='items']//div[text()='" + name_task + "']"
+
         wait = WebDriverWait(self.driver, 10)
 
-        wait.until(ec.visibility_of_element_located((By.XPATH, self.LIST_CREATE_TASK_XPATH))).click()
+        wait.until(ec.visibility_of_element_located((By.XPATH, LIST_CREATE_TASK_XPATH))).click()
         wait.until(ec.visibility_of_element_located((By.XPATH, self.PANEL_COMMENTS_TASK_XPATH))).click()
         wait.until(ec.element_to_be_clickable((By.XPATH, self.INPUT_FIELD_XPATH))).send_keys("COMMENT")
         wait.until(ec.element_to_be_clickable((By.XPATH, self.SECTION_SUBMIT_BUTTON_XPATH))).click()
