@@ -47,3 +47,5 @@ The API allows to create a subtask with parent ID which does not exist
 ``` sh run/run_selenium_tests.sh ```
 #### API Robot tests: 
 ``` sh run/run.sh ```
+#### Selenium Robot tests: 
+``` sh run/run_robot_selenium.sh ```
