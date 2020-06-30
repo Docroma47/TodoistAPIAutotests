@@ -14,6 +14,7 @@ The following test types have been implemented:
 - UI Test using selenium  ```test\unittest_project.py```
 - API unittest (used for getting to know Todois API) ```test\api_unittest.py```
 - API tests using Robot Framework ```test\robot_test.robot```
+- Selenium test using Robot Framework ```test\selenium_test.robot```
 
 
 ### Installation:
